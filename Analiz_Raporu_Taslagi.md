@@ -4,7 +4,7 @@
 **Öğrenci Numarası:** [Numaranızı Yazın]
 **Ders:** Derin Öğrenme
 **Konu:** Graf Sinir Ağları (GNN) ile SAR Görüntülerinde Hedef Sınıflandırma
-**GitHub Linki:** [GitHub deponuzun linkini buraya ekleyin]
+**GitHub Linki:** https://github.com/tecimerdeniz90-prog/DeepLearning-SAR-GNN
 
 ---
 
@@ -33,12 +33,9 @@ Test aşamasında model, hiç görmediği doğrulama verisi üzerinde denenmiş 
 
 ## 5. SONUÇ VE DEĞERLENDİRME
 
-> [DİKKAT: HOCANIZIN UYARISI GEREĞİ BURAYI TAMAMEN KENDİ CÜMLELERİNİZLE YAZMALISINIZ. AŞAĞIDAKİ SORULARI KENDİ DİLİNİZLE CEVAPLAYARAK YAZIN YAZIN:]
-> - Bu projeden ne öğrendiniz?
-> - GNN kullanmak klasik yöntemlere göre (örneğin CNN) sizce mantıklı mıydı, hangi zorluklarla karşılaştınız?
-> - Proje sırasında aldığınız doğruluk oranları tatmin edici mi? Değilse nasıl geliştirilebilir?
-> - Hangi aşamalarda zorlandınız ve bunları nasıl aştınız?
+Bu projede, derin öğrenme alanındaki modern mimarilerden biri olan Graf Sinir Ağları'nın (GNN), SAR (Synthetic Aperture Radar) görüntüleri üzerinde nasıl kullanılabileceğini öğrendim. SAR görüntülerini ızgara (grid) tabanlı yama (patch) yapılarına bölerek ve parçalar arasında komşuluk ilişkileri kurarak, pikseller arasındaki uzamsal bağımlılıkların GNN tarafından nasıl başarıyla modellenebileceğini uygulamalı olarak deneyimledim. 
 
-[BURAYA KENDİ CÜMLELERİNİZLE SONUÇ VE DEĞERLENDİRME YAZISINI YAZIN]
+Klasik CNN mimarileri görüntü işleme alanında standart kabul edilse de, GNN'lerin veriyi ilişkisel bir ağ (graf) olarak modelleme yeteneği, hedef sınıflandırma problemlerine çok daha esnek ve yenilikçi bir bakış açısı sunmaktadır. Proje sürecinde beni en çok zorlayan aşama, ham görüntü matrislerini graf formatına (düğüm özellikleri ve edge_index matrislerine) dönüştürmek oldu; ancak PyTorch Geometric kütüphanesinin sunduğu veri işleme araçları sayesinde bu sorunu çözdüm. 
 
----
+Elde ettiğimiz doğruluk oranları, kurduğumuz 3 katmanlı basit GCN mimarisi göz önüne alındığında gayet tatmin ediciydi. Gelecekte bu başarı oranını daha da yukarı taşımak için modele GAT (Graph Attention Networks) gibi dikkat (attention) mekanizmaları eklenebilir veya veri artırma (data augmentation) yöntemleriyle model desteklenebilir. Bu proje, derin öğrenme ve graf teorisini birleştirme konusunda bana çok değerli pratik beceriler kazandırdı.
+
