@@ -2,6 +2,7 @@ import os
 import torch
 import torch.nn.functional as F
 from torch_geometric.loader import DataLoader
+import matplotlib.pyplot as plt
 from dataset import SARGraphDataset
 from model import GNNClassifier
 
@@ -9,7 +10,7 @@ def train():
     data_dir = os.path.join(os.path.dirname(__file__), 'MSTAR_Dummy') # Gerçek veriseti varsa burayı değiştirin
     
     print("Eğitim veriseti yükleniyor...")
-    train_dataset = SARGraphDataset(root=data_dir, split='train')
+    train_dataset = SARGraphDataset(root=data_dir, split='train', apply_noise=True)
     
     if len(train_dataset) == 0:
         print("Eğitim veriseti bulunamadı! Lütfen önce generate_dummy_data.py dosyasını çalıştırın.")
@@ -29,6 +30,9 @@ def train():
     model.train()
     epochs = 20
     
+    loss_history = []
+    acc_history = []
+    
     for epoch in range(epochs):
         total_loss = 0
         correct = 0
@@ -44,8 +48,33 @@ def train():
             pred = out.argmax(dim=1)
             correct += int((pred == data.y).sum())
             
+        epoch_loss = total_loss / len(train_dataset)
         acc = correct / len(train_dataset)
-        print(f'Epoch {epoch+1:03d}, Loss: {total_loss/len(train_dataset):.4f}, Train Acc: {acc:.4f}')
+        
+        loss_history.append(epoch_loss)
+        acc_history.append(acc)
+        
+        print(f'Epoch {epoch+1:03d}, Loss: {epoch_loss:.4f}, Train Acc: {acc:.4f}')
+
+    # Eğitim Grafiğini Çizdir ve Kaydet
+    plt.figure(figsize=(10, 5))
+    plt.subplot(1, 2, 1)
+    plt.plot(loss_history, label='Train Loss', color='blue')
+    plt.title('Training Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.legend()
+    
+    plt.subplot(1, 2, 2)
+    plt.plot(acc_history, label='Train Accuracy', color='orange')
+    plt.title('Training Accuracy')
+    plt.xlabel('Epoch')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    
+    plot_path = os.path.join(os.path.dirname(__file__), 'training_history.png')
+    plt.savefig(plot_path)
+    print(f"Eğitim grafiği kaydedildi: {plot_path}")
 
     # Modeli kaydet
     model_save_path = os.path.join(os.path.dirname(__file__), 'gnn_model.pth')

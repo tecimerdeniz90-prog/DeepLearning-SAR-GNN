@@ -2,6 +2,8 @@ import os
 import torch
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 from torch_geometric.loader import DataLoader
 from dataset import SARGraphDataset
 from model import GNNClassifier
@@ -37,10 +39,12 @@ def predict_and_plot():
         print(f"Model dosyası bulunamadı: {model_path}. Lütfen önce train.py çalıştırın.")
         return
         
-    model.load_state_dict(torch.load(model_path, map_location=device))
+    model.load_state_dict(torch.load(model_path, map_location=device, weights_only=True))
     model.eval()
     
     results = []
+    all_preds = []
+    all_labels = []
     
     class_correct = list(0. for i in range(num_classes))
     class_total = list(0. for i in range(num_classes))
@@ -57,6 +61,9 @@ def predict_and_plot():
             if pred == true_label:
                 class_correct[true_label] += 1
             class_total[true_label] += 1
+            
+            all_preds.append(pred)
+            all_labels.append(true_label)
             
             results.append({
                 'Image_Index': i,
@@ -95,7 +102,18 @@ def predict_and_plot():
     plot_path = os.path.join(os.path.dirname(__file__), 'accuracy_plot.png')
     plt.savefig(plot_path)
     print(f"Doğruluk grafiği {plot_path} olarak kaydedildi.")
-    plt.show()
+    
+    # Confusion Matrix (Karmaşıklık Matrisi) Isı Haritası
+    cm = confusion_matrix(all_labels, all_preds)
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=classes, yticklabels=classes)
+    plt.xlabel('Tahmin Edilen (Predicted)')
+    plt.ylabel('Gerçek (True)')
+    plt.title('SAR Görüntüleri GNN Confusion Matrix')
+    
+    cm_path = os.path.join(os.path.dirname(__file__), 'confusion_matrix.png')
+    plt.savefig(cm_path)
+    print(f"Karmaşıklık matrisi grafiği {cm_path} olarak kaydedildi.")
 
 if __name__ == '__main__':
     predict_and_plot()

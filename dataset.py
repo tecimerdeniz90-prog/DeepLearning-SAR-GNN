@@ -4,14 +4,14 @@ import torch
 import numpy as np
 from PIL import Image
 from torch_geometric.data import Data, InMemoryDataset
-from torchvision import transforms
 
-def image_to_graph(img_path, grid_size=8):
+def image_to_graph(img_path, grid_size=8, apply_noise=False):
     """
     Bir görüntüyü Grid (Izgara) tabanlı bir grafa dönüştürür.
     Görüntü grid_size x grid_size parçaya (patch) bölünür.
     Her parça bir düğüm (node) olur. Düğüm özellikleri o parçanın piksel değerleridir.
     Komşu parçalar birbirine kenarlar (edges) ile bağlanır.
+    apply_noise=True ise düğüm özelliklerine Gauss Gürültüsü eklenir.
     """
     img = Image.open(img_path).convert('L') # SAR genelde gri seviyedir (grayscale)
     img = img.resize((64, 64)) # Görüntüyü standart bir boyuta getir
@@ -47,16 +47,24 @@ def image_to_graph(img_path, grid_size=8):
                 edges_dst.append(i * grid_size + (j+1))
                 
     x = torch.tensor(np.array(nodes), dtype=torch.float)
+    
+    # Veri Artırma: SAR Speckle Noise (Gauss Gürültüsü) simülasyonu
+    if apply_noise:
+        noise = torch.randn_like(x) * 0.05 # %5 Gauss gürültüsü
+        x = x + noise
+        x = torch.clamp(x, 0.0, 1.0) # Piksel değerlerini 0-1 arasında sınırla
+        
     edge_index = torch.tensor([edges_src, edges_dst], dtype=torch.long)
     
     return Data(x=x, edge_index=edge_index)
 
 
 class SARGraphDataset(InMemoryDataset):
-    def __init__(self, root, split='train', transform=None, pre_transform=None):
+    def __init__(self, root, split='train', apply_noise=False, transform=None, pre_transform=None):
         self.split = split
+        self.apply_noise = apply_noise
         super().__init__(root, transform, pre_transform)
-        self.data, self.slices = torch.load(self.processed_paths[0])
+        self.data, self.slices = torch.load(self.processed_paths[0], weights_only=False)
 
     @property
     def raw_file_names(self):
@@ -64,7 +72,8 @@ class SARGraphDataset(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return [f'data_{self.split}.pt']
+        noise_str = "_noisy" if self.apply_noise else ""
+        return [f'data_{self.split}{noise_str}.pt']
 
     def process(self):
         data_list = []
@@ -92,7 +101,7 @@ class SARGraphDataset(InMemoryDataset):
                         glob.glob(os.path.join(cls_dir, '*.jpeg'))
             
             for img_path in img_paths:
-                data = image_to_graph(img_path, grid_size=8)
+                data = image_to_graph(img_path, grid_size=8, apply_noise=self.apply_noise)
                 data.y = torch.tensor([class_to_idx[cls_name]], dtype=torch.long)
                 data_list.append(data)
                 

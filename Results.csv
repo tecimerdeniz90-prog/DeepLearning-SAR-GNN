@@ -1,0 +1,16 @@
+Image_Index,True_Class,Predicted_Class,Is_Correct
+0,Target_1,Target_1,True
+1,Target_1,Target_2,False
+2,Target_1,Target_1,True
+3,Target_1,Target_1,True
+4,Target_1,Target_1,True
+5,Target_2,Target_1,False
+6,Target_2,Target_1,False
+7,Target_2,Target_1,False
+8,Target_2,Target_1,False
+9,Target_2,Target_1,False
+10,Target_3,Target_1,False
+11,Target_3,Target_1,False
+12,Target_3,Target_1,False
+13,Target_3,Target_1,False
+14,Target_3,Target_1,False

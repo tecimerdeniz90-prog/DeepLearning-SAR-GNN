@@ -1,15 +1,16 @@
 import torch
 import torch.nn.functional as F
-from torch_geometric.nn import GCNConv, global_mean_pool
+from torch_geometric.nn import GATConv, global_mean_pool
 
 class GNNClassifier(torch.nn.Module):
     def __init__(self, num_node_features, num_classes):
         super(GNNClassifier, self).__init__()
         
-        # Graph Convolutional Katmanları
-        self.conv1 = GCNConv(num_node_features, 64)
-        self.conv2 = GCNConv(64, 128)
-        self.conv3 = GCNConv(128, 64)
+        # Graph Attention (GAT) Katmanları
+        # Dikkat (attention) mekanizması ile düğümler komşularına farklı ağırlıklar verecek.
+        self.conv1 = GATConv(num_node_features, 64, heads=2, concat=False)
+        self.conv2 = GATConv(64, 128, heads=2, concat=False)
+        self.conv3 = GATConv(128, 64, heads=2, concat=False)
         
         # Tam Bağlı (Fully Connected) Katman
         self.fc = torch.nn.Linear(64, num_classes)

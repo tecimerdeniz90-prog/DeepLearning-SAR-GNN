@@ -11,7 +11,7 @@ def generate_dummy_mstar_data(base_path, num_classes=3, samples_per_class_train=
         samples = samples_per_class_train if split == 'train' else samples_per_class_test
         for c in range(num_classes):
             class_name = f'Target_{c+1}'
-            dir_path = os.path.join(base_path, split, class_name)
+            dir_path = os.path.join(base_path, 'raw', split, class_name)
             os.makedirs(dir_path, exist_ok=True)
             
             for i in range(samples):

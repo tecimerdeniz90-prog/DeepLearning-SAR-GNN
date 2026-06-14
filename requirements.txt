@@ -4,6 +4,8 @@ torch_geometric
 numpy
 pandas
 matplotlib
+seaborn
+scikit-learn
 scikit-learn
 Pillow
 networkx
